@@ -142,6 +142,9 @@ Install draw.io desktop if missing:
 - Plan a grid before assigning x/y coordinates
 - Group related nodes in the same horizontal or vertical band
 - Use `swimlane` cells for logical grouping with visible borders
+- To force straight vertical connections, pin entry/exit points explicitly on edges:
+  `exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0`
+- Always center-align a child node under its parent (same center x) to avoid diagonal routing
 
 ## Export
 
