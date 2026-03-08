@@ -12,6 +12,14 @@ Claude Code skill for generating Draw.io diagrams and exporting to PNG/SVG/PDF l
 - Iterative design: preview, get feedback, and refine diagrams until they look right
 - Triggers automatically when diagrams would help explain complex systems
 
+## Supported diagram types
+
+- **Architecture**: microservices, cloud (AWS/GCP/Azure), network topology, deployment
+- **Flowcharts**: business processes, workflows, decision trees, state machines
+- **UML**: class diagrams, sequence diagrams, use case diagrams
+- **Data**: ER diagrams, data flow diagrams (DFD)
+- **Other**: org charts, mind maps, wireframes
+
 ## Dependencies
 
 | Tool | Purpose |
