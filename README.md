@@ -9,6 +9,7 @@ Claude Code skill for generating Draw.io diagrams and exporting to PNG/SVG/PDF l
 - Generates `.drawio` XML files from natural language descriptions
 - Exports diagrams to PNG, SVG, PDF, or JPG using the native draw.io desktop CLI
 - Supports multi-page diagrams and layered grouping
+- Iterative design: preview, get feedback, and refine diagrams until they look right
 - Triggers automatically when diagrams would help explain complex systems
 
 ## Dependencies

@@ -51,8 +51,56 @@ Install draw.io desktop if missing:
 1. **Check deps** — verify `draw.io --version` succeeds; note platform for correct CLI path
 2. **Plan** — identify shapes, relationships, layout (LR or TB), group by tier/layer
 3. **Generate** — write `.drawio` XML file to disk (output dir same as user's working dir)
-4. **Export** — run CLI to produce PNG, SVG, or PDF
-5. **Report** — tell user the output file paths (source + image)
+4. **Export draft** — run CLI to produce PNG for preview
+5. **Self-check** — read the exported PNG, catch obvious issues, auto-fix before showing user
+6. **Review loop** — show image to user, collect feedback, apply targeted XML edits, re-export, repeat until approved
+7. **Final export** — export approved version to all requested formats, report file paths
+
+### Step 5: Self-Check
+
+After exporting the draft PNG, read the image and check for these issues before showing the user:
+
+| Check | What to look for | Auto-fix action |
+|-------|-----------------|-----------------|
+| Overlapping shapes | Two or more shapes stacked on top of each other | Shift shapes apart by ≥200px |
+| Clipped labels | Text cut off at shape boundaries | Increase shape width/height to fit label |
+| Missing connections | Arrows that don't visually connect to shapes | Verify `source`/`target` ids match existing cells |
+| Off-canvas shapes | Shapes at negative coordinates or far from the main group | Move to positive coordinates near the cluster |
+
+- Max **2 self-check rounds** — if issues remain after 2 fixes, show the user anyway
+- Re-export after each fix and re-read the new PNG
+
+### Step 6: Review Loop
+
+After self-check, show the exported image and ask the user for feedback.
+
+**Targeted edit rules** — for each type of feedback, apply the minimal XML change:
+
+| User request | XML edit action |
+|-------------|----------------|
+| Change color of X | Find `mxCell` by `value` matching X, update `fillColor`/`strokeColor` in `style` |
+| Add a new node | Append a new `mxCell` vertex with next available `id`, position near related nodes |
+| Remove a node | Delete the `mxCell` vertex and any edges with matching `source`/`target` |
+| Move shape X | Update `x`/`y` in the `mxGeometry` of the matching `mxCell` |
+| Resize shape X | Update `width`/`height` in the `mxGeometry` of the matching `mxCell` |
+| Add arrow from A to B | Append a new `mxCell` edge with `source`/`target` matching A and B ids |
+| Change label text | Update the `value` attribute of the matching `mxCell` |
+| Change layout direction | **Full regeneration** — rebuild XML with new orientation |
+
+**Rules:**
+- For single-element changes: edit existing XML in place — preserves layout tuning from prior iterations
+- For layout-wide changes (e.g., swap LR↔TB, "start over"): regenerate full XML
+- Overwrite the same `{name}.png` each iteration — do not create `v1`, `v2`, `v3` files
+- After applying edits, re-export and show the updated image
+- Loop continues until user says approved / done / LGTM / 完成
+- **Safety valve:** after 5 iteration rounds, suggest the user open the `.drawio` file in draw.io desktop for fine-grained adjustments
+
+### Step 7: Final Export
+
+Once the user approves:
+- Export to all requested formats (PNG, SVG, PDF, JPG) — default to PNG if not specified
+- Report file paths for both the `.drawio` source file and exported image(s)
+- Confirm files are saved and ready to use
 
 ## Draw.io XML Structure
 
@@ -204,3 +252,4 @@ fi
 | Background color wrong in CLI export | Known CLI bug; add `--transparent` flag or set background via style |
 | Overlapping shapes | Plan a 200px grid before placing x/y coordinates |
 | Special characters in `value` | Use XML entities: `&amp;` `&lt;` `&gt;` `&quot;` |
+| Iteration loop never ends | After 5 rounds, suggest user open .drawio in draw.io desktop for fine-tuning |
