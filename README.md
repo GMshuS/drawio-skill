@@ -1,190 +1,191 @@
 # drawio-skill
 
-[中文文档](README_CN.md)
+[English](README_EN.md)
 
-## What it does
+## 功能说明
 
-- Generates `.drawio` XML files from natural language descriptions
-- Exports diagrams to PNG, SVG, PDF, or JPG using the native draw.io desktop CLI
-- Supports multi-page diagrams and layered grouping
-- Iterative design: preview, get feedback, and refine diagrams until they look right
-- Triggers automatically when diagrams would help explain complex systems
+- 根据自然语言描述生成 `.drawio` XML 文件
+- 使用 draw.io 桌面版原生 CLI 将图表导出为 PNG、SVG、PDF 或 JPG
+- 支持多页图表和分层分组
+- 迭代设计：预览、获取反馈、反复优化直到图表满意为止
+- 当图表有助于解释复杂系统时自动触发
 
-## Supported diagram types
+## 支持的图表类型
 
-- **Architecture**: microservices, cloud (AWS/GCP/Azure), network topology, deployment
-- **Flowcharts**: business processes, workflows, decision trees, state machines
-- **UML**: class diagrams, sequence diagrams, use case diagrams
-- **Data**: ER diagrams, data flow diagrams (DFD)
-- **Other**: org charts, mind maps, wireframes
+- **架构图**：微服务架构、云架构（AWS/GCP/Azure）、网络拓扑、部署架构
+- **流程图**：业务流程、工作流、决策树、状态机
+- **UML**：类图、序列图、用例图
+- **数据图**：ER 图、数据流图（DFD）
+- **其他**：组织架构图、思维导图、线框图
 
-## How it works
+## 工作流程
 
-![Workflow](assets/workflow.png)
+![工作流程](assets/workflow-cn.png)
 
-## Dependencies
+## 依赖项
 
-| Tool | Purpose |
-|------|---------|
-| `draw.io` desktop app | Native CLI to export `.drawio` → PNG/SVG/PDF |
+| 工具 | 用途 |
+|------|------|
+| `draw.io` 桌面应用 | 原生 CLI，用于将 `.drawio` 导出为 PNG/SVG/PDF |
 
-No browser automation or Node.js dependency required.
+无需浏览器自动化或 Node.js 依赖。
 
-## Install
+## 安装
 
 ### macOS
 
 ```bash
-# Recommended — Homebrew
+# 推荐方式 — Homebrew
 brew install --cask drawio
 
-# Verify
+# 验证安装
 draw.io --version
 ```
 
 ### Windows
 
-Download and install from: https://github.com/jgraph/drawio-desktop/releases
+从以下地址下载安装包：https://github.com/jgraph/drawio-desktop/releases
 
 ```powershell
-# Verify
+# 验证安装
 "C:\Program Files\draw.io\draw.io.exe" --version
 ```
 
 ### Linux
 
-Download `.deb` or `.rpm` from: https://github.com/jgraph/drawio-desktop/releases
+从以下地址下载 `.deb` 或 `.rpm` 包：https://github.com/jgraph/drawio-desktop/releases
 
 ```bash
-# Headless export (required on Linux servers without display)
+# 无头导出（Linux 服务器无显示器时必须）
 sudo apt install xvfb  # Debian/Ubuntu
 xvfb-run -a draw.io --version
 ```
 
-### Platform notes
+### 平台说明
 
-| Platform | Extra step |
-|----------|------------|
-| **macOS** | No extra steps after Homebrew install |
-| **Windows** | Use full path if not in PATH |
-| **Linux** | Wrap commands with `xvfb-run -a` for headless export |
+| 平台 | 额外步骤 |
+|------|----------|
+| **macOS** | Homebrew 安装后无需额外操作 |
+| **Windows** | 如不在 PATH 中，使用完整路径 |
+| **Linux** | 无头导出时命令前加 `xvfb-run -a` |
 
-## Usage
+## 使用方式
 
-Just describe what you want:
+直接描述你想要的图表：
 
 ```
-Create a microservices e-commerce architecture with API Gateway, auth/user/order/product/payment services,
-Kafka message queue, notification service, and separate databases for each service
+画一个微服务电商架构图，包含 Mobile/Web/Admin 客户端，API Gateway，
+Auth/User/Order/Product/Payment 微服务，Kafka 消息队列，Notification 服务，
+以及各自独立的数据库
 ```
 
-Claude will generate the `.drawio` XML file and export it to PNG automatically.
+Claude 会自动生成 `.drawio` 文件并导出为 PNG。
 
-## Example
+## 示例
 
-**Prompt:**
-> Create a microservices e-commerce architecture with Mobile/Web/Admin clients, API Gateway,
-> Auth/User/Order/Product/Payment services, Kafka message queue, Notification service,
-> and User DB / Order DB / Product DB / Redis Cache / Stripe API
+**提示词：**
+> 画一个微服务电商架构图，包含 Mobile/Web/Admin 客户端，API Gateway（含认证+限流+路由），
+> Auth/User/Order/Product/Payment 微服务，Kafka 消息队列，Notification 服务，
+> User DB / Order DB / Product DB / Redis Cache / Stripe API
 
-**Output:**
+**输出效果：**
 
-![Microservices Architecture](assets/microservices-example.png)
+![微服务架构图](assets/microservices-example.png)
 
-## Topology demos
+## 拓扑示例
 
-The skill handles various diagram topologies with clean edge routing — no lines crossing through shapes.
+本 skill 支持多种图表拓扑，线条路由清晰 —— 不会穿越无关的形状。
 
-### Star topology (7 nodes)
+### 星形拓扑（7 个节点）
 
-Central message broker with 6 microservices radiating outward. Edges enter Kafka from different sides, zero crossings.
+中央消息代理 + 6 个微服务辐射排列。连线从不同方向进入 Kafka，零交叉。
 
-![Star topology](assets/demo-star.png)
+![星形拓扑](assets/demo-star-cn.png)
 
-### Layered flow (10 nodes, 4 tiers)
+### 分层流程（10 个节点，4 层）
 
-E-commerce architecture with 2 cross-connections: Order→Product (same-tier horizontal) and Auth→Redis (diagonal via routing corridor). All edges route cleanly.
+电商架构，含 2 条交叉连线：订单→商品（同层水平）和 认证→Redis（对角线，经路由走廊绕行）。所有线条路由清晰。
 
-![Layered flow](assets/demo-layered.png)
+![分层流程](assets/demo-layered-cn.png)
 
-### Ring / cycle (8 nodes)
+### 环形 / 循环（8 个节点）
 
-CI/CD pipeline with a closed loop and 2 spur branches. Edges flow along the perimeter without crossing the interior.
+CI/CD 流水线，包含闭合回路和 2 个分支。线条沿矩形外围流动，不穿越内部区域。
 
-![Ring cycle](assets/demo-ring.png)
+![环形循环](assets/demo-ring-cn.png)
 
-## Comparison
+## 对比
 
-### vs Native Claude Code (no skill)
+### 与原生 Claude Code（无 skill）对比
 
-| Feature | Native Claude Code | This skill |
-|---------|-------------------|------------|
-| Generate draw.io XML | Yes — Claude knows the format | Yes |
-| Self-check after export | No | Yes — reads PNG and auto-fixes 6 issue types |
-| Iterative review loop | No — must manually re-prompt | Yes — targeted edits, 5-round safety valve |
-| Proactive triggers | No — only when explicitly asked | Yes — auto-suggests when 3+ components |
-| Layout guidelines | None — varies by run | Complexity-scaled spacing, routing corridors, hub placement |
-| Color palette | Random/inconsistent | 7-color semantic system (blue=services, green=DB, purple=auth…) |
-| Edge routing rules | Basic | Pin entry/exit points, distribute connections, waypoint corridors |
-| Container/group patterns | None | Swimlane, group, custom container with parent-child nesting |
-| Embed diagram in export | No | Yes — `--embed-diagram` keeps exported PNG/SVG/PDF editable |
-| Chinese language triggers | No | Yes — "画图", "架构图", "流程图" |
+| 功能 | 原生 Claude Code | 本 skill |
+|------|-----------------|---------|
+| 生成 draw.io XML | 是 — Claude 本身了解格式 | 是 |
+| 导出后自检 | 否 | 是 — 读取 PNG 自动修复 6 类问题 |
+| 迭代反馈循环 | 否 — 需手动重新提问 | 是 — 定向编辑，5 轮安全阀 |
+| 主动触发 | 否 — 仅在明确要求时 | 是 — 3+ 组件时自动建议画图 |
+| 布局规范 | 无 — 每次结果不一致 | 按复杂度分级间距、路由走廊、hub 居中策略 |
+| 配色方案 | 随机/不一致 | 7 色语义系统（蓝=服务、绿=数据库、紫=安全…） |
+| 连线路由规则 | 基础 | 锚点分配、连接分布、走廊绕行 |
+| 容器/分组 | 无 | Swimlane、Group、自定义容器 + 父子嵌套 |
+| 嵌入式导出 | 否 | 是 — `--embed-diagram` 保持导出文件可编辑 |
+| 中文支持 | 否 | 是 — "画图"、"架构图"、"流程图" |
 
-### vs Other draw.io Skills & Tools
+### 与其他 draw.io Skills / 工具对比
 
-| Feature | This skill | [jgraph/drawio-mcp](https://github.com/jgraph/drawio-mcp) (official, 1.3k⭐) | [bahayonghang/drawio-skills](https://github.com/bahayonghang/drawio-skills) (60⭐) | [GBSOSS/ai-drawio](https://github.com/GBSOSS/ai-drawio) (63⭐) | [ekusiadadus/draw-mcp](https://github.com/ekusiadadus/draw-mcp) (24⭐) |
+| 功能 | 本 skill | [jgraph/drawio-mcp](https://github.com/jgraph/drawio-mcp)（官方，1.3k⭐） | [bahayonghang/drawio-skills](https://github.com/bahayonghang/drawio-skills)（60⭐） | [GBSOSS/ai-drawio](https://github.com/GBSOSS/ai-drawio)（63⭐） | [ekusiadadus/draw-mcp](https://github.com/ekusiadadus/draw-mcp)（24⭐） |
 |---------|-----------|---------------|-------------------|--------------|----------------|
-| **Approach** | Pure SKILL.md | SKILL.md / MCP / Project | YAML DSL + MCP | Plugin + browser | SKILL.md + validator |
-| **Dependencies** | draw.io desktop only | draw.io desktop | MCP server (`npx`) | Browser + local server | Python CLI |
-| **Self-check** | ✅ 2-round auto-fix | ❌ | ❌ | ❌ screenshot | ❌ |
-| **Iterative review** | ✅ 5-round loop | ❌ generate once | ✅ 3 workflows | ❌ | ❌ |
-| **Layout guidance** | ✅ complexity-scaled | ✅ basic spacing | ❌ relies on MCP | ❌ | ❌ |
-| **Color system** | ✅ 7-color semantic | ❌ | ✅ 5 themes | ❌ | ❌ |
-| **Container/group** | ✅ swimlane + group | ✅ detailed | ❌ | ❌ | ❌ |
-| **Embed diagram** | ✅ `--embed-diagram` | ✅ | ❌ | ❌ | ❌ |
-| **Edge routing** | ✅ corridors + waypoints | ✅ arrowhead rules | ❌ | ❌ | ✅ validation |
-| **Chinese support** | ✅ triggers + docs | ❌ | ❌ | ✅ | ❌ |
-| **XML validation** | Self-check (visual) | ❌ | ❌ | ❌ | ✅ 31 rules, CI hooks |
-| **Cloud icons** | AWS basic | ❌ | ✅ AWS/GCP/Azure/K8s | ❌ | ❌ |
-| **Zero-config** | ✅ copy SKILL.md | ✅ | ❌ needs `npx` | ❌ needs plugin install | ❌ needs Python |
+| **方式** | 纯 SKILL.md | SKILL.md / MCP / Project | YAML DSL + MCP | 插件 + 浏览器 | SKILL.md + 验证器 |
+| **依赖** | 仅 draw.io 桌面版 | draw.io 桌面版 | MCP 服务（`npx`） | 浏览器 + 本地服务 | Python CLI |
+| **自检** | ✅ 2 轮自动修复 | ❌ | ❌ | ❌ 截图 | ❌ |
+| **迭代审查** | ✅ 5 轮循环 | ❌ 一次生成 | ✅ 3 种工作流 | ❌ | ❌ |
+| **布局指南** | ✅ 按复杂度分级 | ✅ 基础间距 | ❌ 依赖 MCP | ❌ | ❌ |
+| **配色系统** | ✅ 7 色语义 | ❌ | ✅ 5 种主题 | ❌ | ❌ |
+| **容器/分组** | ✅ swimlane + group | ✅ 详细 | ❌ | ❌ | ❌ |
+| **嵌入式导出** | ✅ `--embed-diagram` | ✅ | ❌ | ❌ | ❌ |
+| **连线路由** | ✅ 走廊 + waypoints | ✅ 箭头间距规则 | ❌ | ❌ | ✅ 验证 |
+| **中文支持** | ✅ 触发词 + 文档 | ❌ | ❌ | ✅ | ❌ |
+| **XML 验证** | 自检（视觉） | ❌ | ❌ | ❌ | ✅ 31 条规则、CI 集成 |
+| **云图标** | AWS 基础 | ❌ | ✅ AWS/GCP/Azure/K8s | ❌ | ❌ |
+| **零配置** | ✅ 复制 SKILL.md | ✅ | ❌ 需要 `npx` | ❌ 需安装插件 | ❌ 需要 Python |
 
-### Key advantages of this skill
+### 本 skill 核心优势
 
-1. **Self-check + iterative loop** — the only pure-SKILL.md solution that reads its own output and auto-fixes before showing the user, then supports multi-round refinement
-2. **Zero-config, zero-dependency** — just one `SKILL.md` file + draw.io desktop. No MCP server, no Python, no Node.js, no browser
-3. **Production-grade layout** — complexity-scaled spacing, routing corridors, hub-center strategy, connection distribution rules
-4. **Full Chinese support** — proactive triggers ("画图", "架构图"), bilingual documentation
+1. **自检 + 迭代循环** — 唯一纯 SKILL.md 方案中能自动读取输出、修复问题、支持多轮优化的
+2. **零配置、零依赖** — 仅需一个 `SKILL.md` 文件 + draw.io 桌面版，无需 MCP、Python、Node.js、浏览器
+3. **专业级布局** — 按复杂度分级间距、路由走廊、hub 居中、连接分布规则
+4. **完整中文支持** — 主动触发词（"画图"、"架构图"）、双语文档
 
-## Files
+## 文件说明
 
-- `SKILL.md` — **the only required file**. This is what Claude Code loads as the skill instructions.
-- `README.md` — this file (English documentation)
-- `README_CN.md` — Chinese documentation
-- `assets/` — example diagrams and workflow images
+- `SKILL.md` — **唯一必需的文件**，Claude Code 加载的 skill 指令。
+- `README.md` — 本文件（中文，GitHub 首页显示）
+- `README_EN.md` — 英文说明
+- `assets/` — 示例图表和工作流图片
 
-> **Note:** Only `SKILL.md` is needed for the skill to work. The `assets/`, `README.md`, and `README_CN.md` files are documentation only and can be safely deleted to save space.
+> **提示：** 仅 `SKILL.md` 是 skill 运行所必需的。`assets/`、`README.md` 和 `README_CN.md` 仅为文档用途，可以安全删除以节省空间。
 
-> All example diagrams were generated in Claude Code with Claude Opus 4.6.
+> 所有示例图表均由 Claude Code 配合 Claude Opus 4.6 模型生成。
 
-## License
+## 开源协议
 
 MIT
 
-## Support
+## 支持作者
 
-If this skill helps you, consider supporting the author:
+如果这个 skill 对你有帮助，欢迎支持作者：
 
 <table>
   <tr>
     <td align="center">
-      <img src="https://raw.githubusercontent.com/Agents365-ai/images_payment/main/qrcode/wechat-pay.png" width="180" alt="WeChat Pay">
+      <img src="https://raw.githubusercontent.com/Agents365-ai/images_payment/main/qrcode/wechat-pay.png" width="180" alt="微信支付">
       <br>
-      <b>WeChat Pay</b>
+      <b>微信支付</b>
     </td>
     <td align="center">
-      <img src="https://raw.githubusercontent.com/Agents365-ai/images_payment/main/qrcode/alipay.png" width="180" alt="Alipay">
+      <img src="https://raw.githubusercontent.com/Agents365-ai/images_payment/main/qrcode/alipay.png" width="180" alt="支付宝">
       <br>
-      <b>Alipay</b>
+      <b>支付宝</b>
     </td>
     <td align="center">
       <img src="https://raw.githubusercontent.com/Agents365-ai/images_payment/main/qrcode/buymeacoffee.png" width="180" alt="Buy Me a Coffee">
@@ -194,7 +195,7 @@ If this skill helps you, consider supporting the author:
   </tr>
 </table>
 
-## Author
+## 作者
 
 **Agents365-ai**
 
