@@ -11,6 +11,8 @@ Generate `.drawio` XML files and export to PNG/SVG/PDF/JPG locally using the nat
 
 **Supported formats:** PNG, SVG, PDF, JPG — no browser automation needed.
 
+PNG, SVG, and PDF exports support `--embed-diagram` (`-e`) — the exported file contains the full diagram XML, so opening it in draw.io recovers the editable diagram. Use double extensions (`name.drawio.png`) to signal embedded XML.
+
 ## When to Use
 
 **Explicit triggers:** user says "画图", "diagram", "visualize", "flowchart", "draw", "架构图", "流程图"
@@ -126,8 +128,10 @@ Once the user approves:
 **Rules:**
 - `id="0"` and `id="1"` are required root cells — never omit them
 - User shapes start at `id="2"` and increment sequentially
-- All shapes have `parent="1"`
+- All shapes have `parent="1"` (unless inside a container — then use container's id)
 - All text uses `html=1` in style for proper rendering
+- **Never use `--` inside XML comments** — it's illegal per XML spec and causes parse errors
+- Escape special characters in attribute values: `&amp;`, `&lt;`, `&gt;`, `&quot;`
 
 ### Shape types (vertex)
 
@@ -160,7 +164,37 @@ Once the user approves:
 </mxCell>
 ```
 
+### Containers and groups
+
+For architecture diagrams with nested elements, use draw.io's parent-child containment — do **not** just place shapes on top of larger shapes.
+
+| Type | Style | When to use |
+|------|-------|-------------|
+| **Group** (invisible) | `group;pointerEvents=0;` | No visual border needed, container has no connections |
+| **Swimlane** (titled) | `swimlane;startSize=30;` | Container needs a visible title bar, or container itself has connections |
+| **Custom container** | Add `container=1;pointerEvents=0;` to any shape | Any shape acting as a container without its own connections |
+
+**Key rules:**
+- Add `pointerEvents=0;` to container styles that should not capture connections between children
+- Children set `parent="containerId"` and use coordinates **relative to the container**
+
+```xml
+<!-- Swimlane container -->
+<mxCell id="svc1" value="User Service" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+  <mxGeometry x="100" y="100" width="300" height="200" as="geometry"/>
+</mxCell>
+<!-- Child inside container — coordinates relative to parent -->
+<mxCell id="api1" value="REST API" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="svc1">
+  <mxGeometry x="20" y="40" width="120" height="60" as="geometry"/>
+</mxCell>
+<mxCell id="db1" value="Database" style="shape=cylinder3;whiteSpace=wrap;html=1;" vertex="1" parent="svc1">
+  <mxGeometry x="160" y="40" width="120" height="60" as="geometry"/>
+</mxCell>
+```
+
 ### Connector (edge)
+
+**CRITICAL:** Every edge `mxCell` must contain a `<mxGeometry relative="1" as="geometry" />` child element. Self-closing edge cells (`<mxCell ... edge="1" ... />`) are **invalid** and will not render. Always use the expanded form.
 
 ```xml
 <!-- Directed arrow — always include rounded, orthogonalLoop, jettySize for clean routing -->
@@ -187,6 +221,7 @@ Once the user approves:
 - **Always** include `rounded=1;orthogonalLoop=1;jettySize=auto` — these enable smart routing that avoids overlaps
 - Pin `exitX/exitY/entryX/entryY` on every edge when a node has 2+ connections — distributes lines across the shape perimeter
 - Add `<Array as="points">` waypoints when an edge must detour around an intermediate shape
+- **Leave room for arrowheads:** the final straight segment between the last bend and the target shape must be ≥20px long. If too short, the arrowhead overlaps the bend and looks broken. Fix by increasing node spacing or adding explicit waypoints
 
 ### Distributing connections on a shape
 
@@ -250,16 +285,16 @@ When multiple edges connect to the same shape, assign different entry/exit point
 
 ```bash
 # macOS — Homebrew (draw.io in PATH)
-draw.io -x -f png -s 2 -o diagram.png input.drawio
+draw.io -x -f png -e -s 2 -o diagram.drawio.png input.drawio
 
 # macOS — full path (if not in PATH)
-/Applications/draw.io.app/Contents/MacOS/draw.io -x -f png -s 2 -o diagram.png input.drawio
+/Applications/draw.io.app/Contents/MacOS/draw.io -x -f png -e -s 2 -o diagram.drawio.png input.drawio
 
 # Windows
-"C:\Program Files\draw.io\draw.io.exe" -x -f png -s 2 -o diagram.png input.drawio
+"C:\Program Files\draw.io\draw.io.exe" -x -f png -e -s 2 -o diagram.drawio.png input.drawio
 
 # Linux (headless — requires xvfb-run)
-xvfb-run -a draw.io -x -f png -s 2 -o diagram.png input.drawio
+xvfb-run -a draw.io -x -f png -e -s 2 -o diagram.drawio.png input.drawio
 
 # SVG export
 draw.io -x -f svg -o diagram.svg input.drawio
@@ -271,8 +306,11 @@ draw.io -x -f pdf -o diagram.pdf input.drawio
 **Key flags:**
 - `-x` — export mode (required)
 - `-f` — format: `png`, `svg`, `pdf`, `jpg`
+- `-e` — embed diagram XML in output (PNG, SVG, PDF only) — exported file remains editable in draw.io
 - `-s` — scale: `1`, `2`, `3` (2 recommended for PNG)
-- `-o` — output file path
+- `-o` — output file path (use `.drawio.png` double extension when embedding)
+- `-b` — border width around diagram (default: 0, recommend 10)
+- `-t` — transparent background (PNG only)
 - `--page-index 0` — export specific page (default: all)
 
 ### Checking if draw.io is in PATH
@@ -302,3 +340,6 @@ fi
 | Edges crossing through shapes | Add waypoints, distribute entry/exit points, or increase spacing |
 | Special characters in `value` | Use XML entities: `&amp;` `&lt;` `&gt;` `&quot;` |
 | Iteration loop never ends | After 5 rounds, suggest user open .drawio in draw.io desktop for fine-tuning |
+| Self-closing edge `mxCell` | Always use expanded form with `<mxGeometry>` child — self-closing edges won't render |
+| `--` inside XML comments | Illegal per XML spec — use single hyphens or rephrase |
+| Arrowhead overlaps bend | Final edge segment before target must be ≥20px — increase spacing or add waypoints |

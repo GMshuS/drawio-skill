@@ -1,26 +1,6 @@
-# drawio-skill（已归档）
-
-> **本项目已归档。** Claude Code 本身就能生成 draw.io XML，专门的 skill 意义不大。替代方案见下方 [替代方案](#替代方案)。
+# drawio-skill
 
 [English](README.md)
-
-## 替代方案
-
-不需要安装这个 skill，只需在你的 `CLAUDE.md`（全局或项目级）中加几行：
-
-```markdown
-## Draw.io
-- Export: `/Applications/draw.io.app/Contents/MacOS/draw.io -x -f png -s 2 input.drawio`
-- Default style: rounded=1, spacing=15, edge routing orthogonal
-```
-
-就这样。Claude Code 已经掌握 draw.io XML 语法、布局原则和图表设计，不需要额外的 skill。
-
----
-
-*以下为原始 README，仅供参考。*
-
----
 
 ## 功能说明
 
@@ -133,6 +113,48 @@ Claude 会自动生成 `.drawio` 文件并导出为 PNG。
 CI/CD 流水线，包含闭合回路和 2 个分支。线条沿矩形外围流动，不穿越内部区域。
 
 ![环形循环](assets/demo-ring-cn.png)
+
+## 对比
+
+### 与原生 Claude Code（无 skill）对比
+
+| 功能 | 原生 Claude Code | 本 skill |
+|------|-----------------|---------|
+| 生成 draw.io XML | 是 — Claude 本身了解格式 | 是 |
+| 导出后自检 | 否 | 是 — 读取 PNG 自动修复 6 类问题 |
+| 迭代反馈循环 | 否 — 需手动重新提问 | 是 — 定向编辑，5 轮安全阀 |
+| 主动触发 | 否 — 仅在明确要求时 | 是 — 3+ 组件时自动建议画图 |
+| 布局规范 | 无 — 每次结果不一致 | 按复杂度分级间距、路由走廊、hub 居中策略 |
+| 配色方案 | 随机/不一致 | 7 色语义系统（蓝=服务、绿=数据库、紫=安全…） |
+| 连线路由规则 | 基础 | 锚点分配、连接分布、走廊绕行 |
+| 容器/分组 | 无 | Swimlane、Group、自定义容器 + 父子嵌套 |
+| 嵌入式导出 | 否 | 是 — `--embed-diagram` 保持导出文件可编辑 |
+| 中文支持 | 否 | 是 — "画图"、"架构图"、"流程图" |
+
+### 与其他 draw.io Skills / 工具对比
+
+| 功能 | 本 skill | [jgraph/drawio-mcp](https://github.com/jgraph/drawio-mcp)（官方，1.3k⭐） | [bahayonghang/drawio-skills](https://github.com/bahayonghang/drawio-skills)（60⭐） | [GBSOSS/ai-drawio](https://github.com/GBSOSS/ai-drawio)（63⭐） | [ekusiadadus/draw-mcp](https://github.com/ekusiadadus/draw-mcp)（24⭐） |
+|---------|-----------|---------------|-------------------|--------------|----------------|
+| **方式** | 纯 SKILL.md | SKILL.md / MCP / Project | YAML DSL + MCP | 插件 + 浏览器 | SKILL.md + 验证器 |
+| **依赖** | 仅 draw.io 桌面版 | draw.io 桌面版 | MCP 服务（`npx`） | 浏览器 + 本地服务 | Python CLI |
+| **自检** | ✅ 2 轮自动修复 | ❌ | ❌ | ❌ 截图 | ❌ |
+| **迭代审查** | ✅ 5 轮循环 | ❌ 一次生成 | ✅ 3 种工作流 | ❌ | ❌ |
+| **布局指南** | ✅ 按复杂度分级 | ✅ 基础间距 | ❌ 依赖 MCP | ❌ | ❌ |
+| **配色系统** | ✅ 7 色语义 | ❌ | ✅ 5 种主题 | ❌ | ❌ |
+| **容器/分组** | ✅ swimlane + group | ✅ 详细 | ❌ | ❌ | ❌ |
+| **嵌入式导出** | ✅ `--embed-diagram` | ✅ | ❌ | ❌ | ❌ |
+| **连线路由** | ✅ 走廊 + waypoints | ✅ 箭头间距规则 | ❌ | ❌ | ✅ 验证 |
+| **中文支持** | ✅ 触发词 + 文档 | ❌ | ❌ | ✅ | ❌ |
+| **XML 验证** | 自检（视觉） | ❌ | ❌ | ❌ | ✅ 31 条规则、CI 集成 |
+| **云图标** | AWS 基础 | ❌ | ✅ AWS/GCP/Azure/K8s | ❌ | ❌ |
+| **零配置** | ✅ 复制 SKILL.md | ✅ | ❌ 需要 `npx` | ❌ 需安装插件 | ❌ 需要 Python |
+
+### 本 skill 核心优势
+
+1. **自检 + 迭代循环** — 唯一纯 SKILL.md 方案中能自动读取输出、修复问题、支持多轮优化的
+2. **零配置、零依赖** — 仅需一个 `SKILL.md` 文件 + draw.io 桌面版，无需 MCP、Python、Node.js、浏览器
+3. **专业级布局** — 按复杂度分级间距、路由走廊、hub 居中、连接分布规则
+4. **完整中文支持** — 主动触发词（"画图"、"架构图"）、双语文档
 
 ## 文件说明
 

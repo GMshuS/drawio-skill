@@ -1,26 +1,6 @@
-# drawio-skill (Archived)
-
-> **This project has been archived.** Claude Code can already generate draw.io XML natively — a dedicated skill adds little value. See [Alternative](#alternative) below for a simpler approach.
+# drawio-skill
 
 [中文文档](README_CN.md)
-
-## Alternative
-
-Instead of installing this skill, add these lines to your `CLAUDE.md` (global or project-level):
-
-```markdown
-## Draw.io
-- Export: `/Applications/draw.io.app/Contents/MacOS/draw.io -x -f png -s 2 input.drawio`
-- Default style: rounded=1, spacing=15, edge routing orthogonal
-```
-
-That's it. Claude Code already knows draw.io XML syntax, layout principles, and diagram design — no skill needed.
-
----
-
-*Original README below for reference.*
-
----
 
 ## What it does
 
@@ -132,6 +112,48 @@ E-commerce architecture with 2 cross-connections: Order→Product (same-tier hor
 CI/CD pipeline with a closed loop and 2 spur branches. Edges flow along the perimeter without crossing the interior.
 
 ![Ring cycle](assets/demo-ring.png)
+
+## Comparison
+
+### vs Native Claude Code (no skill)
+
+| Feature | Native Claude Code | This skill |
+|---------|-------------------|------------|
+| Generate draw.io XML | Yes — Claude knows the format | Yes |
+| Self-check after export | No | Yes — reads PNG and auto-fixes 6 issue types |
+| Iterative review loop | No — must manually re-prompt | Yes — targeted edits, 5-round safety valve |
+| Proactive triggers | No — only when explicitly asked | Yes — auto-suggests when 3+ components |
+| Layout guidelines | None — varies by run | Complexity-scaled spacing, routing corridors, hub placement |
+| Color palette | Random/inconsistent | 7-color semantic system (blue=services, green=DB, purple=auth…) |
+| Edge routing rules | Basic | Pin entry/exit points, distribute connections, waypoint corridors |
+| Container/group patterns | None | Swimlane, group, custom container with parent-child nesting |
+| Embed diagram in export | No | Yes — `--embed-diagram` keeps exported PNG/SVG/PDF editable |
+| Chinese language triggers | No | Yes — "画图", "架构图", "流程图" |
+
+### vs Other draw.io Skills & Tools
+
+| Feature | This skill | [jgraph/drawio-mcp](https://github.com/jgraph/drawio-mcp) (official, 1.3k⭐) | [bahayonghang/drawio-skills](https://github.com/bahayonghang/drawio-skills) (60⭐) | [GBSOSS/ai-drawio](https://github.com/GBSOSS/ai-drawio) (63⭐) | [ekusiadadus/draw-mcp](https://github.com/ekusiadadus/draw-mcp) (24⭐) |
+|---------|-----------|---------------|-------------------|--------------|----------------|
+| **Approach** | Pure SKILL.md | SKILL.md / MCP / Project | YAML DSL + MCP | Plugin + browser | SKILL.md + validator |
+| **Dependencies** | draw.io desktop only | draw.io desktop | MCP server (`npx`) | Browser + local server | Python CLI |
+| **Self-check** | ✅ 2-round auto-fix | ❌ | ❌ | ❌ screenshot | ❌ |
+| **Iterative review** | ✅ 5-round loop | ❌ generate once | ✅ 3 workflows | ❌ | ❌ |
+| **Layout guidance** | ✅ complexity-scaled | ✅ basic spacing | ❌ relies on MCP | ❌ | ❌ |
+| **Color system** | ✅ 7-color semantic | ❌ | ✅ 5 themes | ❌ | ❌ |
+| **Container/group** | ✅ swimlane + group | ✅ detailed | ❌ | ❌ | ❌ |
+| **Embed diagram** | ✅ `--embed-diagram` | ✅ | ❌ | ❌ | ❌ |
+| **Edge routing** | ✅ corridors + waypoints | ✅ arrowhead rules | ❌ | ❌ | ✅ validation |
+| **Chinese support** | ✅ triggers + docs | ❌ | ❌ | ✅ | ❌ |
+| **XML validation** | Self-check (visual) | ❌ | ❌ | ❌ | ✅ 31 rules, CI hooks |
+| **Cloud icons** | AWS basic | ❌ | ✅ AWS/GCP/Azure/K8s | ❌ | ❌ |
+| **Zero-config** | ✅ copy SKILL.md | ✅ | ❌ needs `npx` | ❌ needs plugin install | ❌ needs Python |
+
+### Key advantages of this skill
+
+1. **Self-check + iterative loop** — the only pure-SKILL.md solution that reads its own output and auto-fixes before showing the user, then supports multi-round refinement
+2. **Zero-config, zero-dependency** — just one `SKILL.md` file + draw.io desktop. No MCP server, no Python, no Node.js, no browser
+3. **Production-grade layout** — complexity-scaled spacing, routing corridors, hub-center strategy, connection distribution rules
+4. **Full Chinese support** — proactive triggers ("画图", "架构图"), bilingual documentation
 
 ## Files
 
