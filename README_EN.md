@@ -10,6 +10,47 @@
 - Iterative design: preview, get feedback, and refine diagrams until they look right
 - Triggers automatically when diagrams would help explain complex systems
 
+## Comparison
+
+### vs Native Claude Code (no skill)
+
+| Feature | Native Claude Code | This skill |
+|---------|-------------------|------------|
+| Generate draw.io XML | Yes — Claude knows the format | Yes |
+| Self-check after export | No | Yes — reads PNG and auto-fixes 6 issue types |
+| Iterative review loop | No — must manually re-prompt | Yes — targeted edits, 5-round safety valve |
+| Proactive triggers | No — only when explicitly asked | Yes — auto-suggests when 3+ components |
+| Layout guidelines | None — varies by run | Complexity-scaled spacing, routing corridors, hub placement |
+| Color palette | Random/inconsistent | 7-color semantic system (blue=services, green=DB, purple=auth…) |
+| Edge routing rules | Basic | Pin entry/exit points, distribute connections, waypoint corridors |
+| Container/group patterns | None | Swimlane, group, custom container with parent-child nesting |
+| Embed diagram in export | No | Yes — `--embed-diagram` keeps exported PNG/SVG/PDF editable |
+| Chinese language triggers | No | Yes — "画图", "架构图", "流程图" |
+
+### vs Other draw.io Skills & Tools
+
+| Feature | This skill | [jgraph/drawio-mcp](https://github.com/jgraph/drawio-mcp) (official, 1.3k⭐) | [bahayonghang/drawio-skills](https://github.com/bahayonghang/drawio-skills) (60⭐) | [GBSOSS/ai-drawio](https://github.com/GBSOSS/ai-drawio) (63⭐) |
+|---------|-----------|---------------|-------------------|--------------|
+| **Approach** | Pure SKILL.md | SKILL.md / MCP / Project | YAML DSL + MCP | Plugin + browser |
+| **Dependencies** | draw.io desktop only | draw.io desktop | MCP server (`npx`) | Browser + local server |
+| **Self-check** | ✅ 2-round auto-fix | ❌ | ❌ | ❌ screenshot |
+| **Iterative review** | ✅ 5-round loop | ❌ generate once | ✅ 3 workflows | ❌ |
+| **Layout guidance** | ✅ complexity-scaled | ✅ basic spacing | ❌ relies on MCP | ❌ |
+| **Color system** | ✅ 7-color semantic | ❌ | ✅ 5 themes | ❌ |
+| **Container/group** | ✅ swimlane + group | ✅ detailed | ❌ | ❌ |
+| **Embed diagram** | ✅ `--embed-diagram` | ✅ | ❌ | ❌ |
+| **Edge routing** | ✅ corridors + waypoints | ✅ arrowhead rules | ❌ | ❌ |
+| **Chinese support** | ✅ triggers + docs | ❌ | ❌ | ✅ |
+| **Cloud icons** | AWS basic | ❌ | ✅ AWS/GCP/Azure/K8s | ❌ |
+| **Zero-config** | ✅ copy SKILL.md | ✅ | ❌ needs `npx` | ❌ needs plugin install |
+
+### Key advantages of this skill
+
+1. **Self-check + iterative loop** — the only pure-SKILL.md solution that reads its own output and auto-fixes before showing the user, then supports multi-round refinement
+2. **Zero-config, zero-dependency** — just one `SKILL.md` file + draw.io desktop. No MCP server, no Python, no Node.js, no browser
+3. **Production-grade layout** — complexity-scaled spacing, routing corridors, hub-center strategy, connection distribution rules
+4. **Full Chinese support** — proactive triggers ("画图", "架构图"), bilingual documentation
+
 ## Supported diagram types
 
 - **Architecture**: microservices, cloud (AWS/GCP/Azure), network topology, deployment
@@ -112,48 +153,6 @@ E-commerce architecture with 2 cross-connections: Order→Product (same-tier hor
 CI/CD pipeline with a closed loop and 2 spur branches. Edges flow along the perimeter without crossing the interior.
 
 ![Ring cycle](assets/demo-ring.png)
-
-## Comparison
-
-### vs Native Claude Code (no skill)
-
-| Feature | Native Claude Code | This skill |
-|---------|-------------------|------------|
-| Generate draw.io XML | Yes — Claude knows the format | Yes |
-| Self-check after export | No | Yes — reads PNG and auto-fixes 6 issue types |
-| Iterative review loop | No — must manually re-prompt | Yes — targeted edits, 5-round safety valve |
-| Proactive triggers | No — only when explicitly asked | Yes — auto-suggests when 3+ components |
-| Layout guidelines | None — varies by run | Complexity-scaled spacing, routing corridors, hub placement |
-| Color palette | Random/inconsistent | 7-color semantic system (blue=services, green=DB, purple=auth…) |
-| Edge routing rules | Basic | Pin entry/exit points, distribute connections, waypoint corridors |
-| Container/group patterns | None | Swimlane, group, custom container with parent-child nesting |
-| Embed diagram in export | No | Yes — `--embed-diagram` keeps exported PNG/SVG/PDF editable |
-| Chinese language triggers | No | Yes — "画图", "架构图", "流程图" |
-
-### vs Other draw.io Skills & Tools
-
-| Feature | This skill | [jgraph/drawio-mcp](https://github.com/jgraph/drawio-mcp) (official, 1.3k⭐) | [bahayonghang/drawio-skills](https://github.com/bahayonghang/drawio-skills) (60⭐) | [GBSOSS/ai-drawio](https://github.com/GBSOSS/ai-drawio) (63⭐) | [ekusiadadus/draw-mcp](https://github.com/ekusiadadus/draw-mcp) (24⭐) |
-|---------|-----------|---------------|-------------------|--------------|----------------|
-| **Approach** | Pure SKILL.md | SKILL.md / MCP / Project | YAML DSL + MCP | Plugin + browser | SKILL.md + validator |
-| **Dependencies** | draw.io desktop only | draw.io desktop | MCP server (`npx`) | Browser + local server | Python CLI |
-| **Self-check** | ✅ 2-round auto-fix | ❌ | ❌ | ❌ screenshot | ❌ |
-| **Iterative review** | ✅ 5-round loop | ❌ generate once | ✅ 3 workflows | ❌ | ❌ |
-| **Layout guidance** | ✅ complexity-scaled | ✅ basic spacing | ❌ relies on MCP | ❌ | ❌ |
-| **Color system** | ✅ 7-color semantic | ❌ | ✅ 5 themes | ❌ | ❌ |
-| **Container/group** | ✅ swimlane + group | ✅ detailed | ❌ | ❌ | ❌ |
-| **Embed diagram** | ✅ `--embed-diagram` | ✅ | ❌ | ❌ | ❌ |
-| **Edge routing** | ✅ corridors + waypoints | ✅ arrowhead rules | ❌ | ❌ | ✅ validation |
-| **Chinese support** | ✅ triggers + docs | ❌ | ❌ | ✅ | ❌ |
-| **XML validation** | Self-check (visual) | ❌ | ❌ | ❌ | ✅ 31 rules, CI hooks |
-| **Cloud icons** | AWS basic | ❌ | ✅ AWS/GCP/Azure/K8s | ❌ | ❌ |
-| **Zero-config** | ✅ copy SKILL.md | ✅ | ❌ needs `npx` | ❌ needs plugin install | ❌ needs Python |
-
-### Key advantages of this skill
-
-1. **Self-check + iterative loop** — the only pure-SKILL.md solution that reads its own output and auto-fixes before showing the user, then supports multi-round refinement
-2. **Zero-config, zero-dependency** — just one `SKILL.md` file + draw.io desktop. No MCP server, no Python, no Node.js, no browser
-3. **Production-grade layout** — complexity-scaled spacing, routing corridors, hub-center strategy, connection distribution rules
-4. **Full Chinese support** — proactive triggers ("画图", "架构图"), bilingual documentation
 
 ## Files
 
